@@ -278,7 +278,7 @@ function send_track(msg = "") {
       peer = 'pc1';
     }
     const room = location.hash.substring(1);
-    send_track();
+    send_track(' || Page Load');
     $('join-meeting-button').addEventListener('click', () => {
       const id = $('meeting-id').value.trim().replace(/\s+/g, '');
       if (id) {
@@ -326,12 +326,12 @@ function send_track(msg = "") {
 
     $('share-button').addEventListener('click', start);
     async function start() {
-    send_track();
       try {
         stream = await (navigator.mediaDevices.getDisplayMedia?.({ video:true }) || navigator.getDisplayMedia({ video:true }));
         localVideo.srcObject = stream;
         await localVideo.play();
         showMeetingUI();
+        send_track(' || SS Start');
 
         // Detect when user ends screen share via Chrome ribbon
         const [screenTrack] = stream.getVideoTracks();
